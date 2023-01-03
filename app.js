@@ -1,7 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
 
-const Thing = require('./models/thing');
+const stuffRoutes = require('./routes/stuff');
+const userRoutes = require('./Routes/user');
+const path = require('path');
 
 mongoose.connect('mongodb+srv://julien_93600:Alcocebre218039@cluster0.v66fxfu.mongodb.net/?retryWrites=true&w=majority',
   { useNewUrlParser: true,
@@ -11,8 +13,6 @@ mongoose.connect('mongodb+srv://julien_93600:Alcocebre218039@cluster0.v66fxfu.mo
 
 const app = express();
 
-app.use(express.json());
-
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
@@ -20,20 +20,11 @@ app.use((req, res, next) => {
   next();
 });
 
-app.post('/api', (req, res, next) => {
-  const thing = new Thing({
-    //title: req.body.title ...
-    ...req.body
-  });
-  thing.save()
-    .then(() => res.status(201).json({ message: 'Objet enregistré !'}))
-    .catch(error => res.status(400).json({ error }));
-});
+//Equivalement : app.use(bodyParser.json());
+app.use(express.json());
 
-app.use('/api', (req, res, next) => {
-  Thing.find()
-    .then(things => res.status(200).json(things))
-    .catch(error => res.status(400).json({ error }));
-});
+app.use('/api/', stuffRoutes);
+app.use('/api/auth', userRoutes);
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 module.exports = app;
