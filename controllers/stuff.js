@@ -3,7 +3,7 @@ const Thing = require('../models/thing');
 exports.createThing = (req, res, next) => {
   const thing = new Thing({
       userId: req.auth.userId,
-      imageUrl: `./images/${req.file.filename}`,
+      imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
       title: req.body.title,
       description: req.body.description,
       categorie: req.body.categorie,
